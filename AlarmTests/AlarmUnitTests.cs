@@ -8,20 +8,33 @@ namespace LuceraLabs.Alarms.UnitTests
     [TestClass]
     public class AlarmUnitTests
     {
-        private bool ScheduleHasExecuted = false;
+        private AlarmTimeZone TimeZone { get { return AlarmTimeZone.GetSystemDefault(); } }
+        private bool ScheduleActionHasExecuted = false;
 
         [TestMethod]
-        public void Alarm_Schedule()
+        public void Alarm_Schedule_Action()
         {
-            var timezone = AlarmTimeZone.GetSystemDefault();
             var alarm = new Alarm()
             {
                 DaysOfWeek = new DayOfWeek[] { },
-                LocalTime = timezone.CurrentLocalDateTime.AddSeconds(1).TimeOfDay
+                LocalTime = TimeZone.CurrentLocalDateTime.AddSeconds(1).TimeOfDay
             };
-            alarm.Schedule(() => { ScheduleHasExecuted = true; }, timezone).Wait();
-            Task.Delay(2 * 1000);
-            Assert.IsTrue(ScheduleHasExecuted);
+            Assert.IsFalse(ScheduleActionHasExecuted);
+            alarm.ScheduleAsync(() => { ScheduleActionHasExecuted = true; }, TimeZone).Wait();
+            Assert.IsTrue(ScheduleActionHasExecuted);
+        }
+
+        [TestMethod]
+        public void Alarm_IsOneTime()
+        {
+            var alarm = new Alarm()
+            {
+                DaysOfWeek = new DayOfWeek[] { }
+            };
+            Assert.IsTrue(alarm.IsOneTime);
+
+            alarm.DaysOfWeek = new DayOfWeek[] { DayOfWeek.Sunday };
+            Assert.IsFalse(alarm.IsOneTime);
         }
     }
 }

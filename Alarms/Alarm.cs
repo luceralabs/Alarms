@@ -86,16 +86,5 @@ namespace LuceraLabs.Alarms
         {
             await Task.Delay(NextInstance(timezone) - DateTime.UtcNow).ContinueWith((result) => action.Invoke());
         }
-
-        /// <summary>
-        /// Schedules an action to occur at the next alarm
-        /// </summary>
-        /// <param name="task">The task to execute</param>
-        /// <param name="timezone">The timezone in which the alarm will take place</param>
-        /// <returns></returns>
-        public async Task ScheduleAsync(Task task, AlarmTimeZone timezone)
-        {
-            await Task.Delay(NextInstance(timezone) - DateTime.UtcNow).ContinueWith(async (result) => { task.Start(); await task; });
-        }
     }
 }
